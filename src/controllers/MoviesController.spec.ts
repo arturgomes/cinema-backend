@@ -1,39 +1,51 @@
+import { app } from '../App'
+import request from 'supertest'
+import mongoose from 'mongoose';
 
-import { Movie } from "../models/Movie"
-import { connect, clearDatabase, closeDatabase } from '../db'
+afterAll(done => {
+    // Closing the DB connection allows Jest to exit successfully.
+    mongoose.connection.dropDatabase();
+    mongoose.connection.close()
+    done()
+})
+describe('Movies Controller', () => {
 
-beforeAll(async () => await connect())
-afterEach(async () => await clearDatabase())
-afterAll(async () => await closeDatabase())
+    it('should be able to create a new movie', async () => {
+        await request(app)
+            .post('/movies')
+            .send({
+                title: 'Movie 1',
+                duration: 105 * 60000, // 1 hour 45 minutes,
+                startDate: new Date('2022-02-19 19:00:00')
+            })
+            .then(response => {
+                expect(response.body.message).toBe('Movie added')
+            })
 
-
-describe('Movies controller', () => {
-    it('should have empty set of movie at first', async () => {
-
-        const movies = await Movie.find()
-        console.log(movies)
-        expect(movies.length).toBe(0);
     })
-    it('should be possible to create a movie', async () => {
-        const movie = {
-            title: 'Movie 1',
-            duration: 105 * 60000, // 1 hour 45 minutes,
-            startDate: new Date('2022-02-19 19:00:00')
-        }
-        const newMovie = await Movie.create(movie)
-        expect(newMovie).toHaveProperty('_id');
-    })
-    it('should be possible to list movies after inserted', async () => {
-        const movie = {
-            title: 'Movie 1',
-            duration: 105 * 60000, // 1 hour 45 minutes,
-            startDate: new Date('2022-02-19 19:00:00')
-        }
-        const newMovie = await Movie.create(movie)
-        expect(newMovie).toHaveProperty('_id');
+    it('should not to add existing movie', async () => {
+        await request(app)
+            .post('/movies')
+            .send({
+                title: 'Movie 1',
+                duration: 105 * 60000, // 1 hour 45 minutes,
+                startDate: new Date('2022-02-19 19:00:00')
+            }).then(response => {
+                expect(response.body.message).toBe('Movie already exists')
+            })
 
-        const movies = await Movie.find()
-        expect(movies.length).not.toBe(0);
+    })
+    it('should be able to list movies', async () => {
+        await request(app)
+            .get('/movies')
+            .then(response => {
+                const arrMovies = response.body
+                expect(arrMovies.length).toBe(1)
+                expect(arrMovies[0].title).toBe('Movie 1')
+                expect(arrMovies[0].duration).toBe(6300000)
+                expect(arrMovies[0].startDate).toBe('2022-02-19T23:00:00.000Z')
+            })
+
 
     })
 })
