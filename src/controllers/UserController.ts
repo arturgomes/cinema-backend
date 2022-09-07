@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Movie } from '../models/Movie';
 
 import { User } from '../models/User';
 
@@ -18,21 +19,20 @@ export default {
             sitRow,
             sitPlace } =
             request.body;
-        console.log(request.body)
-
         const existing = await User.findOne({
             firstName,
             lastName,
             email
         });
         if (!existing) {
+            const newMovie = await Movie.findOne({ title: movie.title })
             const user = await User.create({
                 firstName,
                 lastName,
                 email,
                 phone,
                 avatarBase64,
-                movie,
+                movie: newMovie,
                 sitRow,
                 sitPlace
             });

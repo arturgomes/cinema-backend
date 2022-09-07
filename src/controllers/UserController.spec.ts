@@ -17,13 +17,9 @@ const user = {
     firstName: "Artur",
     lastName: "Gomes",
     movie: {
-        createdAt: "2022-09-06T02:48:08.002Z",
         duration: 5400000,
         startDate: "2022-02-21T00:00:00.000Z",
-        title: "Movie 4",
-        updatedAt: "2022-09-06T02:48:08.002Z",
-        __v: 0,
-        _id: "6316b4e8bea6de89227a9d0d"
+        title: "Movie 1",
     },
     phone: "0000000",
     sitPlace: 16,
@@ -31,18 +27,23 @@ const user = {
 }
 
 describe('Users Controller', () => {
-
-
     it('should be able to create a new user', async () => {
+        await request(app)
+            .post('/movies')
+            .send({
+                title: 'Movie 1',
+                duration: 105 * 60000, // 1 hour 45 minutes,
+                startDate: new Date('2022-02-19 19:00:00')
+            })
         await request(app)
             .post('/register')
             .send(user)
             .then(response => {
-                expect(response.body.message).toBe('Movie added')
+                expect(response.body.message).toBe('User created')
             })
 
     })
-    it('should not to add existing user', async () => {
+    it('should not add existing user', async () => {
         await request(app)
             .post('/register')
             .send(user).then(response => {
@@ -54,12 +55,12 @@ describe('Users Controller', () => {
         await request(app)
             .get('/users')
             .then(response => {
-                console.log(response.body)
                 const arrMovies = response.body
-                expect(arrMovies.length).toBe(1)
+                // console.log(arrMovies)
+                expect(arrMovies.length).toBeGreaterThan(0)
                 expect(arrMovies[0].firstName).toBe('Artur')
                 expect(arrMovies[0].lastName).toBe('Gomes')
-                expect(arrMovies[0].movie.title).toBe('Movie 4')
+                expect(arrMovies[0].movie.title).toBe('Movie 1')
             })
 
 
