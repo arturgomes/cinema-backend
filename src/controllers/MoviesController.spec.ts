@@ -40,7 +40,7 @@ describe('Movies Controller', () => {
             .get('/movies')
             .then(response => {
                 const arrMovies = response.body
-                expect(arrMovies.length).toBe(1)
+                expect(arrMovies.length).not.toBe(0)
                 expect(arrMovies[0].title).toBe('Movie 1')
                 expect(arrMovies[0].duration).toBe(6300000)
                 expect(arrMovies[0].startDate).toBe('2022-02-19T23:00:00.000Z')
