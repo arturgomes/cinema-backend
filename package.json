@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "./src/index.ts",
   "license": "MIT",
+  "engines": {
+    "node": "^12.22.0 || ^14.17.0 || >=16.0.0"
+  },
   "scripts": {
     "dev": "nodemon --watch 'src/' --exec 'ts-node ./src/index.ts' -e ts",
     "start:dev": "ts-node ./src/index.ts",
