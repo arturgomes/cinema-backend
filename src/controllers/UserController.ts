@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { Movie } from '../models/Movie';
+import MovieService from '../services/MovieService';
 
-import { User } from '../models/User';
+import UserService from '../services/UserService';
 
 export default {
     async index(request: Request, response: Response) {
-        const users = await User.find().populate('movie');
+        const users = await UserService.find();
         return response.status(200).json(users)
     },
     async create(request: Request, response: Response) {
@@ -19,14 +20,14 @@ export default {
             sitRow,
             sitPlace } =
             request.body;
-        const existing = await User.findOne({
+        const existing = await UserService.findOne({
             firstName,
             lastName,
             email
         });
         if (!existing) {
-            const newMovie = await Movie.findOne({ title: movie.title })
-            const user = await User.create({
+            const newMovie = await MovieService.findOne({ title: movie.title })
+            const user = await UserService.create({
                 firstName,
                 lastName,
                 email,
